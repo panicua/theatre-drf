@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 
 from theatre_api.models import Genre, Actor, Play, Performance
+from theatre_api.paginators import LargeResultsSetPagination
 from theatre_api.permissions import IsAdminOrIfAuthenticatedReadOnly
 from theatre_api.serializers import GenreSerializer, ActorSerializer, \
     PlaySerializer, PlayListSerializer, PlayDetailSerializer, \
@@ -20,6 +21,7 @@ class GenreViewSet(
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
+    pagination_class = LargeResultsSetPagination
 
 
 class ActorViewSet(
@@ -30,6 +32,7 @@ class ActorViewSet(
     queryset = Actor.objects.all()
     serializer_class = ActorSerializer
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
+    pagination_class = LargeResultsSetPagination
 
 
 class PlayViewSet(viewsets.ModelViewSet):
