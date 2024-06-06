@@ -1,14 +1,15 @@
+from django.db.models import F, Count
 from rest_framework import mixins, status
 from rest_framework import viewsets
 from rest_framework.decorators import action as action_
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 
-from theatre_api.models import Genre, Actor, Play
+from theatre_api.models import Genre, Actor, Play, Performance
 from theatre_api.permissions import IsAdminOrIfAuthenticatedReadOnly
 from theatre_api.serializers import GenreSerializer, ActorSerializer, \
     PlaySerializer, PlayListSerializer, PlayDetailSerializer, \
-    PlayPosterSerializer
+    PlayPosterSerializer, PerformanceSerializer
 
 
 class GenreViewSet(
@@ -45,7 +46,9 @@ class PlayViewSet(viewsets.ModelViewSet):
         title = self.request.query_params.get("title", None)
         genre = self.request.query_params.get("genre", None)
         actor = self.request.query_params.get("actor", None)
+
         order = self.request.query_params.get("order", None)
+
         queryset = self.queryset
 
         if title:
@@ -89,7 +92,7 @@ class PlayViewSet(viewsets.ModelViewSet):
         serializer_class=PlayPosterSerializer
     )
     def upload_image(self, request, pk=None):
-        """Endpoint for uploading image to the specific play"""
+        """Endpoint for uploading image to the specific Play"""
         play = self.get_object()
         serializer = self.get_serializer(play, data=request.data, partial=True)
 
@@ -98,3 +101,18 @@ class PlayViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PerformanceViewSet(viewsets.ModelViewSet):
+    queryset = (
+        Performance.objects
+        .select_related("play", "theatre_hall")
+        .annotate(
+            tickets_available=(
+                    F("theatre_hall__rows") * F("theatre_hall__seats_in_row")
+                    - Count("tickets")
+            )
+        )
+    )
+    serializer_class = PerformanceSerializer
+    permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
