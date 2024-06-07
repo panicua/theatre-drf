@@ -23,6 +23,7 @@ from theatre_api.serializers import GenreSerializer, ActorSerializer, \
 class GenreViewSet(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
+    mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
     queryset = Genre.objects.all()
@@ -34,6 +35,7 @@ class GenreViewSet(
 class ActorViewSet(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
+    mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
     queryset = Actor.objects.all()
