@@ -149,6 +149,7 @@ class PerformanceViewSet(viewsets.ModelViewSet):
         return super().get_serializer_class()
 
     def get_queryset(self):
+        """Retrieve Performances through filters and/or order them."""
         date = self.request.query_params.get("date")
         play_name = self.request.query_params.get("play")
         order = self.request.query_params.get("order")
@@ -177,6 +178,10 @@ class ReservationViewSet(
     mixins.RetrieveModelMixin,
     GenericViewSet,
 ):
+    """
+    Staff users see all reservations, regular users only see their own.
+    Staff users can delete any reservation, regular users cannot delete any.
+    """
     queryset = Reservation.objects.prefetch_related(
         "tickets__performance__play", "tickets__performance__theatre_hall"
     )
