@@ -1,7 +1,8 @@
 from datetime import datetime
 
 from django.db.models import F, Count
-from drf_spectacular.utils import extend_schema, OpenApiExample
+from drf_spectacular.utils import extend_schema, OpenApiExample, \
+    extend_schema_view, OpenApiParameter
 from rest_framework import mixins, status
 from rest_framework import viewsets
 from rest_framework.decorators import action as action_
@@ -135,7 +136,7 @@ class PlayViewSet(viewsets.ModelViewSet):
         else:
             queryset = queryset.order_by("title")
 
-        return queryset
+        return queryset.distinct()
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -165,6 +166,32 @@ class PlayViewSet(viewsets.ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@extend_schema_view(
+    list=extend_schema(
+        methods=["GET"],
+        description="Retrieve movies with specified filters",
+        parameters=[
+            OpenApiParameter(
+                name="date",
+                description="Filter performances by date (?date=2024-06-09)",
+                required=False,
+                type={"type": "string", "format": "date"},
+            ),
+            OpenApiParameter(
+                name="play",
+                description="Filter movies that contain particular play (?play=Romeo)",
+                required=False,
+                type={"type": "string"},
+            ),
+            OpenApiParameter(
+                name="order",
+                description="Order movies by show_time (?order=ASC; ?order=DESC)",
+                required=False,
+                type={"type": "string"},
+            ),
+        ],
+    ),
+)
 class PerformanceViewSet(viewsets.ModelViewSet):
     queryset = (
         Performance.objects
@@ -208,7 +235,7 @@ class PerformanceViewSet(viewsets.ModelViewSet):
         elif order == "DESC":
             queryset = self.queryset.order_by("-show_time")
 
-        return queryset
+        return queryset.distinct()
 
 
 class ReservationViewSet(
