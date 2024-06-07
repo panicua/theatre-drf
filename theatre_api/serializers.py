@@ -154,6 +154,7 @@ class ReservationSerializer(serializers.ModelSerializer):
         fields = ("id", "tickets", "created_at")
 
     def create(self, validated_data):
+        """Creates tickets for an exactly one reservation"""
         with transaction.atomic():
             tickets_data = validated_data.pop("tickets")
             reservation = Reservation.objects.create(**validated_data)
