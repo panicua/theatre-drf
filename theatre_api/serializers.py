@@ -23,12 +23,14 @@ class ActorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Actor
         fields = ("id", "first_name", "last_name", "full_name")
+        read_only_fields = ("full_name",)
 
 
 class TheatreHallSerializer(serializers.ModelSerializer):
     class Meta:
         model = TheatreHall
         fields = ("id", "name", "rows", "seats_in_row", "capacity")
+        read_only_fields = ("capacity",)
 
 
 class PlaySerializer(serializers.ModelSerializer):
