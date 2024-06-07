@@ -3,7 +3,10 @@ from rest_framework import routers
 
 from theatre_api.views import (
     GenreViewSet,
-    ActorViewSet, PlayViewSet, PerformanceViewSet,
+    ActorViewSet,
+    PlayViewSet,
+    PerformanceViewSet,
+    TheatreHallViewSet,
 )
 
 app_name = "theatre_api"
@@ -14,6 +17,7 @@ router.register("genres", GenreViewSet)
 router.register("actors", ActorViewSet)
 router.register("plays", PlayViewSet)
 router.register("performances", PerformanceViewSet)
+router.register("theatre_halls", TheatreHallViewSet)
 
 urlpatterns = [path("", include(router.urls))]
 

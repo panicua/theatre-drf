@@ -38,6 +38,16 @@ class ActorViewSet(
     pagination_class = LargeResultsSetPagination
 
 
+class TheatreHallViewSet(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet,
+):
+    queryset = TheatreHall.objects.all()
+    serializer_class = TheatreHallSerializer
+    permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
+
+
 class PlayViewSet(viewsets.ModelViewSet):
     queryset = Play.objects.prefetch_related("genres", "actors")
     serializer_class = PlaySerializer
@@ -74,10 +84,10 @@ class PlayViewSet(viewsets.ModelViewSet):
                     actors__first_name__icontains=actor
                 )
 
-        if order == "ASC":
-            queryset = queryset.order_by("title")
-        elif order == "DESC":
+        if order == "DESC":
             queryset = queryset.order_by("-title")
+        else:
+            queryset = queryset.order_by("title")
 
         return queryset
 
