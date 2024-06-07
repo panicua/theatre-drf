@@ -164,3 +164,7 @@ class ReservationSerializer(serializers.ModelSerializer):
 
 class ReservationListSerializer(ReservationSerializer):
     tickets = TicketListSerializer(many=True, read_only=True)
+
+
+class ReservationDetailSerializer(ReservationSerializer):
+    tickets = TicketListSerializer(many=True, read_only=True)

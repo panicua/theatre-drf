@@ -11,12 +11,13 @@ from rest_framework.viewsets import GenericViewSet
 from theatre_api.models import Genre, Actor, Play, Performance, TheatreHall, \
     Reservation
 from theatre_api.paginators import LargeResultsSetPagination
-from theatre_api.permissions import IsAdminOrIfAuthenticatedReadOnly
+from theatre_api.permissions import IsAdminOrIfAuthenticatedReadOnly, \
+    IsStaffToDelete
 from theatre_api.serializers import GenreSerializer, ActorSerializer, \
     PlaySerializer, PlayListSerializer, PlayDetailSerializer, \
     PlayPosterSerializer, PerformanceSerializer, PerformanceListSerializer, \
     PerformanceDetailSerializer, TheatreHallSerializer, ReservationSerializer, \
-    ReservationListSerializer
+    ReservationListSerializer, ReservationDetailSerializer
 
 
 class GenreViewSet(
@@ -170,18 +171,21 @@ class PerformanceViewSet(viewsets.ModelViewSet):
 class ReservationViewSet(
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
-    # mixins.DestroyModelMixin,
+    mixins.DestroyModelMixin,
+    mixins.RetrieveModelMixin,
     GenericViewSet,
 ):
     queryset = Reservation.objects.prefetch_related(
         "tickets__performance__play", "tickets__performance__theatre_hall"
     )
     serializer_class = ReservationSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsStaffToDelete)
 
     def get_serializer_class(self):
         if self.action == "list":
             return ReservationListSerializer
+        if self.action == "retrieve":
+            return ReservationDetailSerializer
         return super().get_serializer_class()
 
     def get_queryset(self):
