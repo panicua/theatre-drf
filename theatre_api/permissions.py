@@ -11,3 +11,10 @@ class IsAdminOrIfAuthenticatedReadOnly(BasePermission):
             )
             or (request.user and request.user.is_staff)
         )
+
+
+class IsStaffToDelete(BasePermission):
+    def has_permission(self, request, view):
+        if view.action == 'destroy':
+            return request.user.is_staff
+        return True
