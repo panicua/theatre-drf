@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django.db.models import F, Count
+from drf_spectacular.utils import extend_schema, OpenApiExample
 from rest_framework import mixins, status
 from rest_framework import viewsets
 from rest_framework.decorators import action as action_
@@ -31,6 +32,25 @@ class GenreViewSet(
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
     pagination_class = LargeResultsSetPagination
 
+    @extend_schema(
+        operation_id="createGenre",
+        description="Create a new genre with its name.",
+        request=GenreSerializer,
+        responses={201: GenreSerializer},
+        examples=[
+            OpenApiExample(
+                "Create Genre Example",
+                summary="An example of creating a new genre.",
+                description="This example shows how to create a new genre with the required field. Name should ne unique.",
+                value={
+                    "name": "Sci-fi",
+                }
+            )
+        ]
+    )
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
 
 class ActorViewSet(
     mixins.CreateModelMixin,
@@ -42,6 +62,26 @@ class ActorViewSet(
     serializer_class = ActorSerializer
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
     pagination_class = LargeResultsSetPagination
+
+    @extend_schema(
+        operation_id="createActor",
+        description="Create a new actor with first name and last name.",
+        request=ActorSerializer,
+        responses={201: ActorSerializer},
+        examples=[
+            OpenApiExample(
+                "Create Actor Example",
+                summary="An example of creating a new actor.",
+                description="This example shows how to create a new actor with the required fields.",
+                value={
+                    "first_name": "John",
+                    "last_name": "Doe"
+                }
+            )
+        ]
+    )
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
 
 
 class TheatreHallViewSet(
