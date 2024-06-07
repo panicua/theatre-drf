@@ -6,7 +6,7 @@ from theatre_api.views import (
     ActorViewSet,
     PlayViewSet,
     PerformanceViewSet,
-    TheatreHallViewSet,
+    TheatreHallViewSet, ReservationViewSet,
 )
 
 app_name = "theatre_api"
@@ -18,6 +18,7 @@ router.register("actors", ActorViewSet)
 router.register("plays", PlayViewSet)
 router.register("performances", PerformanceViewSet)
 router.register("theatre_halls", TheatreHallViewSet)
+router.register("reservations", ReservationViewSet)
 
 urlpatterns = [path("", include(router.urls))]
 

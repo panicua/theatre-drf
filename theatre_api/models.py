@@ -4,6 +4,7 @@ import uuid
 from django.conf import settings
 from django.db import models
 from django.utils.text import slugify
+from rest_framework.exceptions import ValidationError
 
 
 class Reservation(models.Model):
@@ -97,10 +98,27 @@ class Ticket(models.Model):
 
     @staticmethod
     def validate_ticket(row, seat, theatre_hall, error_to_raise):
-        ...
+        for ticket_attr_value, ticket_attr_name, theatre_hall_attr_name in [
+            (row, "row", "rows"),
+            (seat, "seat", "seats_in_row"),
+        ]:
+            count_attrs = getattr(theatre_hall, theatre_hall_attr_name)
+            if not (1 <= ticket_attr_value <= count_attrs):
+                raise error_to_raise(
+                    {
+                        ticket_attr_name:
+                            f"{ticket_attr_name} number must be in available "
+                            f"range: (1, {count_attrs})"
+                    }
+                )
 
     def clean(self):
-        ...
+        Ticket.validate_ticket(
+            self.row,
+            self.seat,
+            self.performance.theatre_hall,
+            ValidationError,
+        )
 
     def save(
         self,

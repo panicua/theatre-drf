@@ -4,16 +4,19 @@ from django.db.models import F, Count
 from rest_framework import mixins, status
 from rest_framework import viewsets
 from rest_framework.decorators import action as action_
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet
 
-from theatre_api.models import Genre, Actor, Play, Performance, TheatreHall
+from theatre_api.models import Genre, Actor, Play, Performance, TheatreHall, \
+    Reservation
 from theatre_api.paginators import LargeResultsSetPagination
 from theatre_api.permissions import IsAdminOrIfAuthenticatedReadOnly
 from theatre_api.serializers import GenreSerializer, ActorSerializer, \
     PlaySerializer, PlayListSerializer, PlayDetailSerializer, \
     PlayPosterSerializer, PerformanceSerializer, PerformanceListSerializer, \
-    PerformanceDetailSerializer, TheatreHallSerializer
+    PerformanceDetailSerializer, TheatreHallSerializer, ReservationSerializer, \
+    ReservationListSerializer
 
 
 class GenreViewSet(
@@ -162,3 +165,30 @@ class PerformanceViewSet(viewsets.ModelViewSet):
             queryset = self.queryset.order_by("-show_time")
 
         return queryset
+
+
+class ReservationViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    # mixins.DestroyModelMixin,
+    GenericViewSet,
+):
+    queryset = Reservation.objects.prefetch_related(
+        "tickets__performance__play", "tickets__performance__theatre_hall"
+    )
+    serializer_class = ReservationSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return ReservationListSerializer
+        return super().get_serializer_class()
+
+    def get_queryset(self):
+        queryset = self.queryset
+        if self.request.user.is_staff:
+            return queryset
+        return queryset.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
