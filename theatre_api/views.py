@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.db.models import F, Count
 from rest_framework import mixins, status
 from rest_framework import viewsets
@@ -5,12 +7,13 @@ from rest_framework.decorators import action as action_
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 
-from theatre_api.models import Genre, Actor, Play, Performance
+from theatre_api.models import Genre, Actor, Play, Performance, TheatreHall
 from theatre_api.paginators import LargeResultsSetPagination
 from theatre_api.permissions import IsAdminOrIfAuthenticatedReadOnly
 from theatre_api.serializers import GenreSerializer, ActorSerializer, \
     PlaySerializer, PlayListSerializer, PlayDetailSerializer, \
-    PlayPosterSerializer, PerformanceSerializer
+    PlayPosterSerializer, PerformanceSerializer, PerformanceListSerializer, \
+    PerformanceDetailSerializer, TheatreHallSerializer
 
 
 class GenreViewSet(
@@ -71,9 +74,9 @@ class PlayViewSet(viewsets.ModelViewSet):
                     actors__first_name__icontains=actor
                 )
 
-        if order == "title":
+        if order == "ASC":
             queryset = queryset.order_by("title")
-        elif order == "-title":
+        elif order == "DESC":
             queryset = queryset.order_by("-title")
 
         return queryset
@@ -119,3 +122,33 @@ class PerformanceViewSet(viewsets.ModelViewSet):
     )
     serializer_class = PerformanceSerializer
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return PerformanceListSerializer
+
+        if self.action == "retrieve":
+            return PerformanceDetailSerializer
+
+        return super().get_serializer_class()
+
+    def get_queryset(self):
+        date = self.request.query_params.get("date")
+        play_name = self.request.query_params.get("play")
+        order = self.request.query_params.get("order")
+
+        queryset = self.queryset
+
+        if date:
+            date = datetime.strptime(date, "%Y-%m-%d").date()
+            queryset = queryset.filter(show_time__date=date)
+
+        if play_name:
+            queryset = queryset.filter(play__title__icontains=play_name)
+
+        if order == "ASC":
+            queryset = self.queryset.order_by("show_time")
+        elif order == "DESC":
+            queryset = self.queryset.order_by("-show_time")
+
+        return queryset
