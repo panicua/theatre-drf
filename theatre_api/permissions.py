@@ -2,6 +2,7 @@ from rest_framework.permissions import SAFE_METHODS, BasePermission
 
 
 class IsAdminOrIfAuthenticatedReadOnly(BasePermission):
+    """Staff can do anything, all others can only read."""
     def has_permission(self, request, view):
         return bool(
             (
@@ -14,6 +15,7 @@ class IsAdminOrIfAuthenticatedReadOnly(BasePermission):
 
 
 class IsStaffToDelete(BasePermission):
+    """Staff can delete permission."""
     def has_permission(self, request, view):
         if view.action == 'destroy':
             return request.user.is_staff
