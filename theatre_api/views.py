@@ -243,7 +243,7 @@ class PlayViewSet(viewsets.ModelViewSet):
         responses={201: PerformanceSerializer},
         examples=[
             OpenApiExample(
-                "Create Performance Example",
+                "Create a performance example",
                 summary="An example of creating a new performance.",
                 description="This example shows how to create a new performance with the required fields.",
                 value={
@@ -301,6 +301,39 @@ class PerformanceViewSet(viewsets.ModelViewSet):
         return queryset.distinct()
 
 
+@extend_schema_view(
+    list=extend_schema(
+        methods=["GET"],
+        description="Retrieve your reservations or filter by user id if staff member",
+        parameters=[
+            OpenApiParameter(
+                name="user",
+                description="Filter reservations by user id (?user=1)",
+                required=False,
+                type={"type": "string", "format": "number"},
+            ),
+        ],
+    ),
+    create=extend_schema(
+        methods=["POST"],
+        description="Create a new reservation with tickets info specified.",
+        request=ReservationSerializer,
+        responses={201: ReservationSerializer},
+        examples=[
+            OpenApiExample(
+                "Create a reservation example",
+                summary="An example of creating a new reservation.",
+                description="This example shows how to create a new reservation with the required fields.",
+                value={
+                    "tickets": [
+                        {"row": 1, "seat": 1, "performance": 1},
+                        {"row": 1, "seat": 2, "performance": 1},
+                    ]
+                }
+            )
+        ]
+    )
+)
 class ReservationViewSet(
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
@@ -327,7 +360,13 @@ class ReservationViewSet(
 
     def get_queryset(self):
         queryset = self.queryset
+
         if self.request.user.is_staff:
+            user = self.request.query_params.get("user")
+
+            if user:
+                queryset = queryset.filter(user=user)
+
             return queryset
         return queryset.filter(user=self.request.user)
 
