@@ -332,6 +332,10 @@ class PerformanceViewSet(viewsets.ModelViewSet):
                 }
             )
         ]
+    ),
+    destroy=extend_schema(
+        methods=["DELETE"],
+        description="Delete reservation by id. Staff users can delete any reservation, regular users cannot delete any.",
     )
 )
 class ReservationViewSet(
