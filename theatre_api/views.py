@@ -85,6 +85,50 @@ class ActorViewSet(
         return super().create(request, *args, **kwargs)
 
 
+@extend_schema_view(
+    list=extend_schema(
+        operation_id="listTheatreHalls",
+        description="Retrieve a list of theatre halls with optional filtering by name.",
+        parameters=[
+            OpenApiParameter(
+                name="name",
+                description="Filter theatre halls by name (?name=Rome)",
+                required=False,
+                type={"type": "string"},
+            ),
+        ],
+        responses={200: TheatreHallSerializer(many=True)},
+        examples=[
+            OpenApiExample(
+                "List Theatre Halls Example",
+                summary="An example of listing theatre halls with optional name filtering.",
+                description="This example shows how to retrieve a list of theatre halls, optionally filtering by the name 'Main'.",
+                value=[
+                    {"id": 1, "name": "Main Hall", "rows": 10, "seats_in_row": 20, "capacity": 200},
+                    {"id": 2, "name": "Small Hall", "rows": 5, "seats_in_row": 15, "capacity": 75},
+                ]
+            )
+        ]
+    ),
+    create=extend_schema(
+        operation_id="createTheatreHall",
+        description="Create a new theatre hall with name, rows, and seats_in_row.",
+        request=TheatreHallSerializer,
+        responses={201: TheatreHallSerializer},
+        examples=[
+            OpenApiExample(
+                "Create Theatre Hall Example",
+                summary="An example of creating a new theatre hall.",
+                description="This example shows how to create a new theatre hall with the required fields.",
+                value={
+                    "name": "Main Hall",
+                    "rows": 10,
+                    "seats_in_row": 20
+                }
+            )
+        ]
+    ),
+)
 class TheatreHallViewSet(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
@@ -103,7 +147,6 @@ class TheatreHallViewSet(
             queryset = queryset.filter(name__icontains=name)
 
         return queryset
-
 
 
 @extend_schema_view(
