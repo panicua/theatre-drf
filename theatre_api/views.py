@@ -338,7 +338,6 @@ class ReservationViewSet(
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
     mixins.DestroyModelMixin,
-    mixins.RetrieveModelMixin,
     GenericViewSet,
 ):
     """
@@ -354,8 +353,6 @@ class ReservationViewSet(
     def get_serializer_class(self):
         if self.action == "list":
             return ReservationListSerializer
-        if self.action == "retrieve":
-            return ReservationDetailSerializer
         return super().get_serializer_class()
 
     def get_queryset(self):
