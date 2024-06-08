@@ -151,6 +151,7 @@ class TheatreHallViewSet(
 
 @extend_schema_view(
     list=extend_schema(
+        operation_id="listPlays",
         methods=["GET"],
         description="Retrieve plays with specified filters",
         parameters=[
@@ -175,6 +176,7 @@ class TheatreHallViewSet(
         ],
     ),
     create=extend_schema(
+        operation_id="createPlay",
         methods=["POST"],
         description="Create a new play with title, description, genre, and actors",
         request=PlaySerializer,
@@ -267,6 +269,7 @@ class PlayViewSet(viewsets.ModelViewSet):
 
 @extend_schema_view(
     list=extend_schema(
+        operation_id="listPerformances",
         methods=["GET"],
         description="Retrieve performances with specified filters",
         parameters=[
@@ -291,6 +294,7 @@ class PlayViewSet(viewsets.ModelViewSet):
         ],
     ),
     create=extend_schema(
+        operation_id="createPerformance",
         methods=["POST"],
         description="Create a new performance with show_time, play and theatre_hall",
         request=PerformanceSerializer,
@@ -357,6 +361,7 @@ class PerformanceViewSet(viewsets.ModelViewSet):
 
 @extend_schema_view(
     list=extend_schema(
+        operation_id="listReservations",
         methods=["GET"],
         description="Retrieve your reservations or filter by user id if staff member",
         parameters=[
@@ -369,6 +374,7 @@ class PerformanceViewSet(viewsets.ModelViewSet):
         ],
     ),
     create=extend_schema(
+        operation_id="createReservation",
         methods=["POST"],
         description="Create a new reservation with tickets info specified.",
         request=ReservationSerializer,
@@ -388,6 +394,7 @@ class PerformanceViewSet(viewsets.ModelViewSet):
         ]
     ),
     destroy=extend_schema(
+        operation_id="deleteReservation",
         methods=["DELETE"],
         description="Delete reservation by id. Staff users can delete any reservation, regular users cannot delete any.",
     )
