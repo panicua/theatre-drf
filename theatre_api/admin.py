@@ -10,7 +10,6 @@ from .models import (
     Ticket,
 )
 
-
 admin.site.register(Reservation)
 admin.site.register(TheatreHall)
 admin.site.register(Genre)

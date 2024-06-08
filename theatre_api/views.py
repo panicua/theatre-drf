@@ -1,8 +1,12 @@
 from datetime import datetime
 
 from django.db.models import F, Count
-from drf_spectacular.utils import extend_schema, OpenApiExample, \
-    extend_schema_view, OpenApiParameter
+from drf_spectacular.utils import (
+    extend_schema,
+    OpenApiExample,
+    extend_schema_view,
+    OpenApiParameter,
+)
 from rest_framework import mixins, status
 from rest_framework import viewsets
 from rest_framework.decorators import action as action_
@@ -10,16 +14,33 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from theatre_api.models import Genre, Actor, Play, Performance, TheatreHall, \
-    Reservation
+from theatre_api.models import (
+    Genre,
+    Actor,
+    Play,
+    Performance,
+    TheatreHall,
+    Reservation,
+)
 from theatre_api.paginators import LargeResultsSetPagination
-from theatre_api.permissions import IsAdminOrIfAuthenticatedReadOnly, \
-    IsStaffToDelete
-from theatre_api.serializers import GenreSerializer, ActorSerializer, \
-    PlaySerializer, PlayListSerializer, PlayDetailSerializer, \
-    PlayPosterSerializer, PerformanceSerializer, PerformanceListSerializer, \
-    PerformanceDetailSerializer, TheatreHallSerializer, ReservationSerializer, \
-    ReservationListSerializer, ReservationDetailSerializer
+from theatre_api.permissions import (
+    IsAdminOrIfAuthenticatedReadOnly,
+    IsStaffToDelete,
+)
+from theatre_api.serializers import (
+    GenreSerializer,
+    ActorSerializer,
+    PlaySerializer,
+    PlayListSerializer,
+    PlayDetailSerializer,
+    PlayPosterSerializer,
+    PerformanceSerializer,
+    PerformanceListSerializer,
+    PerformanceDetailSerializer,
+    TheatreHallSerializer,
+    ReservationSerializer,
+    ReservationListSerializer,
+)
 
 
 class GenreViewSet(
@@ -42,12 +63,13 @@ class GenreViewSet(
             OpenApiExample(
                 "Create Genre Example",
                 summary="An example of creating a new genre.",
-                description="This example shows how to create a new genre with the required field. Name should ne unique.",
+                description="This example shows how to create a new genre "
+                            "with the required field. Name should ne unique.",
                 value={
                     "name": "Sci-fi",
-                }
+                },
             )
-        ]
+        ],
     )
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
@@ -73,13 +95,11 @@ class ActorViewSet(
             OpenApiExample(
                 "Create Actor Example",
                 summary="An example of creating a new actor.",
-                description="This example shows how to create a new actor with the required fields.",
-                value={
-                    "first_name": "John",
-                    "last_name": "Doe"
-                }
+                description="This example shows how to create "
+                            "a new actor with the required fields.",
+                value={"first_name": "John", "last_name": "Doe"},
             )
-        ]
+        ],
     )
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
@@ -88,7 +108,8 @@ class ActorViewSet(
 @extend_schema_view(
     list=extend_schema(
         operation_id="listTheatreHalls",
-        description="Retrieve a list of theatre halls with optional filtering by name.",
+        description="Retrieve a list of theatre halls "
+                    "with optional filtering by name.",
         parameters=[
             OpenApiParameter(
                 name="name",
@@ -101,32 +122,44 @@ class ActorViewSet(
         examples=[
             OpenApiExample(
                 "List Theatre Halls Example",
-                summary="An example of listing theatre halls with optional name filtering.",
-                description="This example shows how to retrieve a list of theatre halls, optionally filtering by the name 'Main'.",
+                summary="An example of listing theatre halls "
+                        "with optional name filtering.",
+                description="This example shows how to retrieve a list of "
+                            "theatre halls, optionally filtering by the name.",
                 value=[
-                    {"id": 1, "name": "Main Hall", "rows": 10, "seats_in_row": 20, "capacity": 200},
-                    {"id": 2, "name": "Small Hall", "rows": 5, "seats_in_row": 15, "capacity": 75},
-                ]
+                    {
+                        "id": 1,
+                        "name": "Main Hall",
+                        "rows": 10,
+                        "seats_in_row": 20,
+                        "capacity": 200,
+                    },
+                    {
+                        "id": 2,
+                        "name": "Small Hall",
+                        "rows": 5,
+                        "seats_in_row": 15,
+                        "capacity": 75,
+                    },
+                ],
             )
-        ]
+        ],
     ),
     create=extend_schema(
         operation_id="createTheatreHall",
-        description="Create a new theatre hall with name, rows, and seats_in_row.",
+        description="Create a new theatre hall with name, rows, "
+                    "and seats_in_row.",
         request=TheatreHallSerializer,
         responses={201: TheatreHallSerializer},
         examples=[
             OpenApiExample(
                 "Create Theatre Hall Example",
                 summary="An example of creating a new theatre hall.",
-                description="This example shows how to create a new theatre hall with the required fields.",
-                value={
-                    "name": "Main Hall",
-                    "rows": 10,
-                    "seats_in_row": 20
-                }
+                description="This example shows how to create a new theatre "
+                            "hall with the required fields.",
+                value={"name": "Main Hall", "rows": 10, "seats_in_row": 20},
             )
-        ]
+        ],
     ),
 )
 class TheatreHallViewSet(
@@ -178,22 +211,25 @@ class TheatreHallViewSet(
     create=extend_schema(
         operation_id="createPlay",
         methods=["POST"],
-        description="Create a new play with title, description, genre, and actors",
+        description="Create a new play with title, description, "
+                    "genre, and actors",
         request=PlaySerializer,
         responses={201: PlaySerializer},
         examples=[
             OpenApiExample(
                 "Create Play Example",
                 summary="An example of creating a new play.",
-                description="This example shows how to create a new play with the required fields. (genres and actors are ids/pks)",
+                description="This example shows how to create a new play with "
+                            "the required fields. "
+                            "(genres and actors are ids/pks)",
                 value={
                     "title": "Some Title",
                     "description": "Very interesting description",
                     "genres": [1, 2],
-                    "actors": [2, 3]
-                }
+                    "actors": [2, 3],
+                },
             )
-        ]
+        ],
     ),
 )
 class PlayViewSet(viewsets.ModelViewSet):
@@ -228,9 +264,7 @@ class PlayViewSet(viewsets.ModelViewSet):
             for actor in actors:
                 queryset = queryset.filter(
                     actors__last_name__icontains=actor
-                ) or queryset.filter(
-                    actors__first_name__icontains=actor
-                )
+                ) or queryset.filter(actors__first_name__icontains=actor)
 
         if order == "DESC":
             queryset = queryset.order_by("-title")
@@ -253,7 +287,7 @@ class PlayViewSet(viewsets.ModelViewSet):
         detail=True,
         permission_classes=[IsAdminUser],
         url_path="upload-image",
-        serializer_class=PlayPosterSerializer
+        serializer_class=PlayPosterSerializer,
     )
     def upload_image(self, request, pk=None):
         """Endpoint for uploading image to the specific Play"""
@@ -281,13 +315,15 @@ class PlayViewSet(viewsets.ModelViewSet):
             ),
             OpenApiParameter(
                 name="play",
-                description="Filter movies that contain particular play name (?play=Romeo)",
+                description="Filter movies that contain particular play name "
+                            "(?play=Romeo)",
                 required=False,
                 type={"type": "string"},
             ),
             OpenApiParameter(
                 name="order",
-                description="Order movies by show_time (?order=ASC; ?order=DESC)",
+                description="Order movies by show_time "
+                            "(?order=ASC; ?order=DESC)",
                 required=False,
                 type={"type": "string"},
             ),
@@ -296,32 +332,32 @@ class PlayViewSet(viewsets.ModelViewSet):
     create=extend_schema(
         operation_id="createPerformance",
         methods=["POST"],
-        description="Create a new performance with show_time, play and theatre_hall",
+        description="Create a new performance with show_time, play "
+                    "and theatre_hall",
         request=PerformanceSerializer,
         responses={201: PerformanceSerializer},
         examples=[
             OpenApiExample(
                 "Create a performance example",
                 summary="An example of creating a new performance.",
-                description="This example shows how to create a new performance with the required fields.",
+                description="This example shows how to create a new "
+                            "performance with the required fields.",
                 value={
                     "show_time": "2024-06-09 13:00:00",
                     "play": 2,
-                    "theatre_hall": 1
-                }
+                    "theatre_hall": 1,
+                },
             )
-        ]
-    )
+        ],
+    ),
 )
 class PerformanceViewSet(viewsets.ModelViewSet):
-    queryset = (
-        Performance.objects
-        .select_related("play", "theatre_hall")
-        .annotate(
-            tickets_available=(
-                    F("theatre_hall__rows") * F("theatre_hall__seats_in_row")
-                    - Count("tickets")
-            )
+    queryset = Performance.objects.select_related(
+        "play", "theatre_hall"
+    ).annotate(
+        tickets_available=(
+            F("theatre_hall__rows") * F("theatre_hall__seats_in_row")
+            - Count("tickets")
         )
     )
     serializer_class = PerformanceSerializer
@@ -363,7 +399,8 @@ class PerformanceViewSet(viewsets.ModelViewSet):
     list=extend_schema(
         operation_id="listReservations",
         methods=["GET"],
-        description="Retrieve your reservations or filter by user id if staff member",
+        description="Retrieve your reservations or "
+                    "filter by user id if staff member",
         parameters=[
             OpenApiParameter(
                 name="user",
@@ -383,21 +420,23 @@ class PerformanceViewSet(viewsets.ModelViewSet):
             OpenApiExample(
                 "Create a reservation example",
                 summary="An example of creating a new reservation.",
-                description="This example shows how to create a new reservation with the required fields.",
+                description="This example shows how to create "
+                            "a new reservation with the required fields.",
                 value={
                     "tickets": [
                         {"row": 1, "seat": 1, "performance": 1},
                         {"row": 1, "seat": 2, "performance": 1},
                     ]
-                }
+                },
             )
-        ]
+        ],
     ),
     destroy=extend_schema(
         operation_id="deleteReservation",
         methods=["DELETE"],
-        description="Delete reservation by id. Staff users can delete any reservation, regular users cannot delete any.",
-    )
+        description="Delete reservation by id. Staff users can delete "
+                    "any reservation, regular users cannot delete any.",
+    ),
 )
 class ReservationViewSet(
     mixins.ListModelMixin,
@@ -409,6 +448,7 @@ class ReservationViewSet(
     Staff users see all reservations, regular users only see their own.
     Staff users can delete any reservation, regular users cannot delete any.
     """
+
     queryset = Reservation.objects.prefetch_related(
         "tickets__performance__play", "tickets__performance__theatre_hall"
     )
