@@ -69,7 +69,7 @@ WSGI_APPLICATION = "theatre_core.wsgi.application"
 
 
 # Database
-POSTGRES_DB = True
+POSTGRES_DB = config("USE_POSTGRES", default=False, cast=bool)
 
 if POSTGRES_DB:
     DATABASES = {
