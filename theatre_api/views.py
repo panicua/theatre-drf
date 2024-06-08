@@ -95,6 +95,51 @@ class TheatreHallViewSet(
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
 
 
+@extend_schema_view(
+    list=extend_schema(
+        methods=["GET"],
+        description="Retrieve plays with specified filters",
+        parameters=[
+            OpenApiParameter(
+                name="title",
+                description="Filter plays by title (?title=Inception)",
+                required=False,
+                type={"type": "string"},
+            ),
+            OpenApiParameter(
+                name="genre",
+                description="Filter plays by genre (?genre=drama,action)",
+                required=False,
+                type={"type": "string"},
+            ),
+            OpenApiParameter(
+                name="actor",
+                description="Filter movies by actors (?actor=jolie,depp)",
+                required=False,
+                type={"type": "string"},
+            ),
+        ],
+    ),
+    create=extend_schema(
+        methods=["POST"],
+        description="Create a new play with title, description, genre, and actors",
+        request=PlaySerializer,
+        responses={201: PlaySerializer},
+        examples=[
+            OpenApiExample(
+                "Create Play Example",
+                summary="An example of creating a new play.",
+                description="This example shows how to create a new play with the required fields. (genres and actors are ids/pks)",
+                value={
+                    "title": "Some Title",
+                    "description": "Very interesting description",
+                    "genres": [1, 2],
+                    "actors": [2, 3]
+                }
+            )
+        ]
+    ),
+)
 class PlayViewSet(viewsets.ModelViewSet):
     queryset = Play.objects.prefetch_related("genres", "actors")
     serializer_class = PlaySerializer
@@ -107,8 +152,8 @@ class PlayViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Retrieve Plays through filters and/or order them."""
         title = self.request.query_params.get("title", None)
-        genre = self.request.query_params.get("genre", None)
-        actor = self.request.query_params.get("actor", None)
+        genres = self.request.query_params.get("genres", None)
+        actors = self.request.query_params.get("actors", None)
 
         order = self.request.query_params.get("order", None)
 
@@ -117,13 +162,13 @@ class PlayViewSet(viewsets.ModelViewSet):
         if title:
             queryset = queryset.filter(title__icontains=title)
 
-        if genre:
-            genres = self._split_params_str_to_words(genre)
+        if genres:
+            genres = self._split_params_str_to_words(genres)
             for genre in genres:
                 queryset = queryset.filter(genres__name__icontains=genre)
 
-        if actor:
-            actors = self._split_params_str_to_words(actor)
+        if actors:
+            actors = self._split_params_str_to_words(actors)
             for actor in actors:
                 queryset = queryset.filter(
                     actors__last_name__icontains=actor
@@ -169,7 +214,7 @@ class PlayViewSet(viewsets.ModelViewSet):
 @extend_schema_view(
     list=extend_schema(
         methods=["GET"],
-        description="Retrieve movies with specified filters",
+        description="Retrieve performances with specified filters",
         parameters=[
             OpenApiParameter(
                 name="date",
@@ -179,7 +224,7 @@ class PlayViewSet(viewsets.ModelViewSet):
             ),
             OpenApiParameter(
                 name="play",
-                description="Filter movies that contain particular play (?play=Romeo)",
+                description="Filter movies that contain particular play name (?play=Romeo)",
                 required=False,
                 type={"type": "string"},
             ),
@@ -191,6 +236,24 @@ class PlayViewSet(viewsets.ModelViewSet):
             ),
         ],
     ),
+    create=extend_schema(
+        methods=["POST"],
+        description="Create a new performance with show_time, play and theatre_hall",
+        request=PerformanceSerializer,
+        responses={201: PerformanceSerializer},
+        examples=[
+            OpenApiExample(
+                "Create Performance Example",
+                summary="An example of creating a new performance.",
+                description="This example shows how to create a new performance with the required fields.",
+                value={
+                    "show_time": "2024-06-09 13:00:00",
+                    "play": 2,
+                    "theatre_hall": 1
+                }
+            )
+        ]
+    )
 )
 class PerformanceViewSet(viewsets.ModelViewSet):
     queryset = (
