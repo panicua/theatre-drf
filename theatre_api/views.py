@@ -94,6 +94,17 @@ class TheatreHallViewSet(
     serializer_class = TheatreHallSerializer
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
 
+    def get_queryset(self):
+        name = self.request.query_params.get("name")
+
+        queryset = self.queryset
+
+        if name:
+            queryset = queryset.filter(name__icontains=name)
+
+        return queryset
+
+
 
 @extend_schema_view(
     list=extend_schema(
@@ -368,7 +379,7 @@ class ReservationViewSet(
             if user:
                 queryset = queryset.filter(user=user)
 
-            return queryset
+            return queryset.distinct()
         return queryset.filter(user=self.request.user)
 
     def perform_create(self, serializer):
