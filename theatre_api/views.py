@@ -64,7 +64,7 @@ class GenreViewSet(
                 "Create Genre Example",
                 summary="An example of creating a new genre.",
                 description="This example shows how to create a new genre "
-                            "with the required field. Name should ne unique.",
+                "with the required field. Name should ne unique.",
                 value={
                     "name": "Sci-fi",
                 },
@@ -96,7 +96,7 @@ class ActorViewSet(
                 "Create Actor Example",
                 summary="An example of creating a new actor.",
                 description="This example shows how to create "
-                            "a new actor with the required fields.",
+                "a new actor with the required fields.",
                 value={"first_name": "John", "last_name": "Doe"},
             )
         ],
@@ -109,7 +109,7 @@ class ActorViewSet(
     list=extend_schema(
         operation_id="listTheatreHalls",
         description="Retrieve a list of theatre halls "
-                    "with optional filtering by name.",
+        "with optional filtering by name.",
         parameters=[
             OpenApiParameter(
                 name="name",
@@ -123,9 +123,9 @@ class ActorViewSet(
             OpenApiExample(
                 "List Theatre Halls Example",
                 summary="An example of listing theatre halls "
-                        "with optional name filtering.",
+                "with optional name filtering.",
                 description="This example shows how to retrieve a list of "
-                            "theatre halls, optionally filtering by the name.",
+                "theatre halls, optionally filtering by the name.",
                 value=[
                     {
                         "id": 1,
@@ -148,7 +148,7 @@ class ActorViewSet(
     create=extend_schema(
         operation_id="createTheatreHall",
         description="Create a new theatre hall with name, rows, "
-                    "and seats_in_row.",
+        "and seats_in_row.",
         request=TheatreHallSerializer,
         responses={201: TheatreHallSerializer},
         examples=[
@@ -156,7 +156,7 @@ class ActorViewSet(
                 "Create Theatre Hall Example",
                 summary="An example of creating a new theatre hall.",
                 description="This example shows how to create a new theatre "
-                            "hall with the required fields.",
+                "hall with the required fields.",
                 value={"name": "Main Hall", "rows": 10, "seats_in_row": 20},
             )
         ],
@@ -213,7 +213,7 @@ class TheatreHallViewSet(
         operation_id="createPlay",
         methods=["POST"],
         description="Create a new play with title, description, "
-                    "genre, and actors",
+        "genre, and actors",
         request=PlaySerializer,
         responses={201: PlaySerializer},
         examples=[
@@ -221,8 +221,8 @@ class TheatreHallViewSet(
                 "Create Play Example",
                 summary="An example of creating a new play.",
                 description="This example shows how to create a new play with "
-                            "the required fields. "
-                            "(genres and actors are ids/pks)",
+                "the required fields. "
+                "(genres and actors are ids/pks)",
                 value={
                     "title": "Some Title",
                     "description": "Very interesting description",
@@ -317,14 +317,14 @@ class PlayViewSet(viewsets.ModelViewSet):
             OpenApiParameter(
                 name="play",
                 description="Filter movies that contain particular play name "
-                            "(?play=Romeo)",
+                "(?play=Romeo)",
                 required=False,
                 type={"type": "string"},
             ),
             OpenApiParameter(
                 name="order",
                 description="Order movies by show_time "
-                            "(?order=ASC; ?order=DESC)",
+                "(?order=ASC; ?order=DESC)",
                 required=False,
                 type={"type": "string"},
             ),
@@ -334,7 +334,7 @@ class PlayViewSet(viewsets.ModelViewSet):
         operation_id="createPerformance",
         methods=["POST"],
         description="Create a new performance with show_time, play "
-                    "and theatre_hall",
+        "and theatre_hall",
         request=PerformanceSerializer,
         responses={201: PerformanceSerializer},
         examples=[
@@ -342,7 +342,7 @@ class PlayViewSet(viewsets.ModelViewSet):
                 "Create a performance example",
                 summary="An example of creating a new performance.",
                 description="This example shows how to create a new "
-                            "performance with the required fields.",
+                "performance with the required fields.",
                 value={
                     "show_time": "2024-06-09 13:00:00",
                     "play": 2,
@@ -401,7 +401,7 @@ class PerformanceViewSet(viewsets.ModelViewSet):
         operation_id="listReservations",
         methods=["GET"],
         description="Retrieve your reservations or "
-                    "filter by user id if staff member",
+        "filter by user id if staff member",
         parameters=[
             OpenApiParameter(
                 name="user",
@@ -422,7 +422,7 @@ class PerformanceViewSet(viewsets.ModelViewSet):
                 "Create a reservation example",
                 summary="An example of creating a new reservation.",
                 description="This example shows how to create "
-                            "a new reservation with the required fields.",
+                "a new reservation with the required fields.",
                 value={
                     "tickets": [
                         {"row": 1, "seat": 1, "performance": 1},
@@ -436,7 +436,7 @@ class PerformanceViewSet(viewsets.ModelViewSet):
         operation_id="deleteReservation",
         methods=["DELETE"],
         description="Delete reservation by id. Staff users can delete "
-                    "any reservation, regular users cannot delete any.",
+        "any reservation, regular users cannot delete any.",
     ),
 )
 class ReservationViewSet(

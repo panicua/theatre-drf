@@ -21,7 +21,9 @@ class Command(BaseCommand):
                 return
             except OperationalError:
                 attempts += 1
-                self.stdout.write(f"Database unavailable, waiting {attempts} second(s)...")
+                self.stdout.write(
+                    f"Database unavailable, waiting {attempts} second(s)..."
+                )
                 time.sleep(1)
 
         raise Exception("Database unavailable after waiting for 20 seconds")
