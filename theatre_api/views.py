@@ -165,6 +165,7 @@ class ActorViewSet(
 class TheatreHallViewSet(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
+    mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
     queryset = TheatreHall.objects.all()
