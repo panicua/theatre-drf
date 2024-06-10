@@ -38,29 +38,29 @@ This is the Theatre Management API. This project provides a comprehensive set of
    source venv/bin/activate
    ```
 
-### Local installation:
-1. Install **requirements.txt** to your **venv**:
-   ```sh
-   pip install -r requirements.txt
-   ```
-
-2. Create a `.env` file in the root of the project directory. You can use the `.env.example` file as a template (just change DJANGO_SECRET_KEY):
+3. Create an `.env` file in the root of the project directory. You can use the `.env.example` file as a template (just change DJANGO_SECRET_KEY):
     ```sh
     cp .env.example .env
     ```
    - **IMPORTANT.** Make sure USE_POSTGRES=False in .env
 
-3. Create apply migrations:
+### Local installation:
+1. Install **requirements.txt** to your **venv**:
+   ```sh
+   pip install -r requirements.txt
+   ```
+   
+2. Create apply migrations:
    ```sh
    python manage.py migrate
    ```
 
-4. (Optional) use my sample of prefilled DB:
+3. (Optional) use my sample of prefilled DB:
    ```sh
    python manage.py loaddata preloaded_db.json
    ```
    
-5. Start the server:
+4. Start the server:
    ```sh
    python manage.py runserver
    ```
