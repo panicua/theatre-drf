@@ -97,9 +97,10 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 100,
     "DEFAULT_THROTTLE_CLASSES": [
         "rest_framework.throttling.AnonRateThrottle",
-        "rest_framework.throttling.UserRateThrottle",
+        "theatre_api.throttling.UserRateThrottle",
+        "theatre_api.throttling.StaffRateThrottle",
     ],
-    "DEFAULT_THROTTLE_RATES": {"anon": "120/hour", "user": "3600/hour"},
+    "DEFAULT_THROTTLE_RATES": {"anon": "120/hour", "user": "3600/hour", "staff": "18000/hour"},
 }
 
 SPECTACULAR_SETTINGS = {
