@@ -25,7 +25,7 @@ from theatre_api.models import (
 from theatre_api.paginators import LargeResultsSetPagination
 from theatre_api.permissions import (
     IsAdminOrIfAuthenticatedReadOnly,
-    IsStaffToDelete,
+    IsStaffToDelete, IsStaffToCreateDestroyPatchPut,
 )
 from theatre_api.serializers import (
     GenreSerializer,
@@ -51,7 +51,7 @@ class GenreViewSet(
 ):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
+    permission_classes = (IsStaffToCreateDestroyPatchPut,)
     pagination_class = LargeResultsSetPagination
 
     @extend_schema(
@@ -83,7 +83,7 @@ class ActorViewSet(
 ):
     queryset = Actor.objects.all()
     serializer_class = ActorSerializer
-    permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
+    permission_classes = (IsStaffToCreateDestroyPatchPut,)
     pagination_class = LargeResultsSetPagination
 
     @extend_schema(
