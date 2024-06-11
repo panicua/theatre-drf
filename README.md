@@ -39,7 +39,7 @@ This is the Theatre Management API. This project provides a comprehensive set of
    source venv/bin/activate
    ```
 
-3. Create an `.env` file in the root of the project directory. You can use the `.env.example` file as a template (just change DJANGO_SECRET_KEY):
+3. Create an `.env` file in the root of the project directory. You can use the `.env.example` file as a template (just add **DJANGO_SECRET_KEY** and **TELEGRAM_TOKEN** if you want to use Telegram bot):
     ```sh
     cp .env.example .env
     ```
