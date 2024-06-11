@@ -155,8 +155,12 @@ class AuthenticatedNotStaffTheatreApiDeleteTests(TestCase):
             reverse("theatre_api:actor-detail", args=[self.actor.id]),
             reverse("theatre_api:genre-detail", args=[self.genre.id]),
             reverse("theatre_api:play-detail", args=[self.play.id]),
-            reverse("theatre_api:theatre_halls-detail", args=[self.theatre_hall.id]),
-            reverse("theatre_api:performance-detail", args=[self.performance.id]),
+            reverse(
+                "theatre_api:theatre_halls-detail", args=[self.theatre_hall.id]
+            ),
+            reverse(
+                "theatre_api:performance-detail", args=[self.performance.id]
+            ),
         ]
 
         for endpoint in endpoints:
@@ -198,25 +202,33 @@ class StaffTheatreApiDeleteTests(TestCase):
             reverse("theatre_api:actor-detail", args=[self.actor.id]),
             reverse("theatre_api:genre-detail", args=[self.genre.id]),
             reverse("theatre_api:play-detail", args=[self.play.id]),
-            reverse("theatre_api:theatre_halls-detail", args=[self.theatre_hall.id]),
+            reverse(
+                "theatre_api:theatre_halls-detail", args=[self.theatre_hall.id]
+            ),
         ]
 
         for endpoint in endpoints:
             with self.subTest(endpoint=endpoint):
                 response = self.client.delete(endpoint)
-                print(f"Endpoint: {endpoint}, Status Code: {response.status_code}, Content: {response.content}")
+                print(
+                    f"Endpoint: {endpoint}, Status Code: {response.status_code}, Content: {response.content}"
+                )
                 self.assertEqual(response.status_code, 204)
 
     def test_post_operations(self):
         post_data = {
             "actor": {"first_name": "John", "last_name": "Doe"},
             "genre": {"name": "Comedy"},
-            "theatre_hall": {"name": "Main Hall", "rows": 10, "seats_in_row": 20},
+            "theatre_hall": {
+                "name": "Main Hall",
+                "rows": 10,
+                "seats_in_row": 20,
+            },
             "play": {
                 "title": "Hamlet",
                 "description": "A Shakespearean tragedy",
                 "genres": [self.genre.id],
-                "actors": [self.actor.id]
+                "actors": [self.actor.id],
             },
             "performance": {
                 "play": self.play.id,
@@ -235,13 +247,17 @@ class StaffTheatreApiDeleteTests(TestCase):
 
         for model, endpoint in post_endpoints.items():
             with self.subTest(model=model):
-                response = self.client.post(endpoint, post_data[model], format="json")
+                response = self.client.post(
+                    endpoint, post_data[model], format="json"
+                )
                 self.assertEqual(response.status_code, 201)
                 created_id = response.data["id"]
 
                 if model == "theatre_hall":
                     model = "theatre_halls"
-                detail_endpoint = reverse(f"theatre_api:{model}-detail", args=[created_id])
+                detail_endpoint = reverse(
+                    f"theatre_api:{model}-detail", args=[created_id]
+                )
                 response = self.client.get(detail_endpoint)
                 self.assertEqual(response.status_code, 200)
                 self.assertEqual(response.data["id"], created_id)
