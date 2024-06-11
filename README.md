@@ -4,13 +4,14 @@ This is the Theatre Management API. This project provides a comprehensive set of
 ## Features
 - JWT token authentication.
 - Swagger documentation.
-- Throttling for Anon, Auth users.
+- Custom throttling with anon, authenticated user, staff user classes.
+- Telegram with few endpoints from project.
 - API Pagination.
 - Image uploading.
-- Theatre API has many endpoints api/theatre: actors, genres, plays, performances, theatre_halls, reservations.
-- User API has multiple useful endpoints you can check them at swagger documentation page.
-- Use endpoints to buy tickets, check reservation history any many more.
-- For endpoints you can check the swagger documentation api/schema/swagger/.
+- Theatre API has such endpoints api/theatre: actors, genres, plays, performances, theatre_halls, reservations.
+- User API has few useful endpoints you can check them at swagger documentation page.
+- Use project endpoints to buy tickets, check reservation history, plays list any many more.
+- For other endpoints you can check the swagger documentation api/schema/swagger/.
 
 
 ## Common installation
@@ -42,25 +43,29 @@ This is the Theatre Management API. This project provides a comprehensive set of
     ```sh
     cp .env.example .env
     ```
-   - **IMPORTANT.** Make sure USE_POSTGRES=False in .env
 
 ### Local installation:
 1. Install **requirements.txt** to your **venv**:
    ```sh
    pip install -r requirements.txt
    ```
+
+2. Change DB variable for docker in **.env**.
+   ```sh
+      USE_POSTGRES=False
+   ```
    
-2. Create apply migrations:
+3. Create apply migrations:
    ```sh
    python manage.py migrate
    ```
 
-3. (Optional) use my sample of prefilled DB:
+4. (Optional) use my sample of prefilled DB:
    ```sh
    python manage.py loaddata preloaded_db.json
    ```
    
-4. Start the server:
+5. Start the server:
    ```sh
    python manage.py runserver
    ```
