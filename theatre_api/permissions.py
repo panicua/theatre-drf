@@ -22,3 +22,12 @@ class IsStaffToDelete(BasePermission):
         if view.action == "destroy":
             return request.user.is_staff
         return True
+
+
+class IsStaffToCreateDestroyPatchPut(BasePermission):
+    """Staff can delete permission."""
+
+    def has_permission(self, request, view):
+        if view.action in ("create", "destroy", "patch", "put"):
+            return request.user.is_staff
+        return True
