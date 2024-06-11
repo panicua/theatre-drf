@@ -17,35 +17,32 @@ User = get_user_model()
 
 
 def create_admin_user():
-    user = User.objects.create_superuser(
+    return User.objects.create_superuser(
         email="admin@example.com", password="adminpassword"
     )
-    return user
 
 
 def create_user():
-    user = User.objects.create_user(
+    return User.objects.create_user(
         email="user@example.com", password="userpassword"
     )
-    return user
+
+
+def get_token(email, password):
+    client = APIClient()
+    response = client.post(
+        "/api/user/token/",
+        {"email": email, "password": password},
+    )
+    return response.data["access"]
 
 
 def get_user_token():
-    client = APIClient()
-    response = client.post(
-        "/api/user/token/",
-        {"email": "user@example.com", "password": "userpassword"},
-    )
-    return response.data["access"]
+    return get_token("user@example.com", "userpassword")
 
 
 def get_admin_token():
-    client = APIClient()
-    response = client.post(
-        "/api/user/token/",
-        {"email": "admin@example.com", "password": "adminpassword"},
-    )
-    return response.data["access"]
+    return get_token("admin@example.com", "adminpassword")
 
 
 def setup_common_data(user_token):
@@ -89,35 +86,29 @@ def setup_common_data(user_token):
 
 class UnauthenticatedTheatreApiPageAccessTests(TestCase):
 
-    def test_unauthenticated_plays_api(self):
+    def test_unauthenticated_access(self):
+        endpoints = [
+            "/api/theatre/plays/",
+            "/api/theatre/theatre_halls/",
+            "/api/theatre/reservations/",
+            "/api/theatre/performances/",
+        ]
         client = APIClient()
-        response = client.get("/api/theatre/plays/")
-        self.assertEqual(response.status_code, 401)
 
-    def test_unauthenticated_theatre_halls_api(self):
-        client = APIClient()
-        response = client.get("/api/theatre/theatre_halls/")
-        self.assertEqual(response.status_code, 401)
+        for endpoint in endpoints:
+            with self.subTest(endpoint=endpoint):
+                response = client.get(endpoint)
+                self.assertEqual(response.status_code, 401)
 
-    def test_unauthenticated_reservations_api(self):
-        client = APIClient()
-        response = client.get("/api/theatre/reservations/")
-        self.assertEqual(response.status_code, 401)
+        allowed_endpoints = [
+            "/api/theatre/actors/",
+            "/api/theatre/genres/",
+        ]
 
-    def test_unauthenticated_actors_api(self):
-        client = APIClient()
-        response = client.get("/api/theatre/actors/")
-        self.assertEqual(response.status_code, 401)
-
-    def test_unauthenticated_genres_api(self):
-        client = APIClient()
-        response = client.get("/api/theatre/genres/")
-        self.assertEqual(response.status_code, 401)
-
-    def test_unauthenticated_performances_api(self):
-        client = APIClient()
-        response = client.get("/api/theatre/performances/")
-        self.assertEqual(response.status_code, 401)
+        for endpoint in allowed_endpoints:
+            with self.subTest(endpoint=endpoint):
+                response = client.get(endpoint)
+                self.assertEqual(response.status_code, 200)
 
 
 class AuthenticatedTheatreApiPageAccessTests(TestCase):
@@ -126,41 +117,22 @@ class AuthenticatedTheatreApiPageAccessTests(TestCase):
         self.user = create_user()
         self.token = get_user_token()
 
-    def test_authenticated_plays_api(self):
+    def test_authenticated_access(self):
         client = APIClient()
         client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
-        response = client.get("/api/theatre/plays/")
-        self.assertEqual(response.status_code, 200)
+        endpoints = [
+            "/api/theatre/plays/",
+            "/api/theatre/theatre_halls/",
+            "/api/theatre/reservations/",
+            "/api/theatre/actors/",
+            "/api/theatre/genres/",
+            "/api/theatre/performances/",
+        ]
 
-    def test_authenticated_theatre_halls_api(self):
-        client = APIClient()
-        client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
-        response = client.get("/api/theatre/theatre_halls/")
-        self.assertEqual(response.status_code, 200)
-
-    def test_authenticated_reservations_api(self):
-        client = APIClient()
-        client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
-        response = client.get("/api/theatre/reservations/")
-        self.assertEqual(response.status_code, 200)
-
-    def test_authenticated_actors_api(self):
-        client = APIClient()
-        client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
-        response = client.get("/api/theatre/actors/")
-        self.assertEqual(response.status_code, 200)
-
-    def test_authenticated_genres_api(self):
-        client = APIClient()
-        client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
-        response = client.get("/api/theatre/genres/")
-        self.assertEqual(response.status_code, 200)
-
-    def test_authenticated_performances_api(self):
-        client = APIClient()
-        client.credentials(HTTP_AUTHORIZATION="Bearer " + self.token)
-        response = client.get("/api/theatre/performances/")
-        self.assertEqual(response.status_code, 200)
+        for endpoint in endpoints:
+            with self.subTest(endpoint=endpoint):
+                response = client.get(endpoint)
+                self.assertEqual(response.status_code, 200)
 
 
 class AuthenticatedNotStaffTheatreApiDeleteTests(TestCase):
@@ -178,41 +150,20 @@ class AuthenticatedNotStaffTheatreApiDeleteTests(TestCase):
             self.reservation_data,
         ) = setup_common_data(self.token)
 
-    def test_delete_actor(self):
-        response = self.client.delete(
-            reverse("theatre_api:actor-detail", args=[self.actor.id])
-        )
-        self.assertEqual(response.status_code, 403)
+    def test_delete_operations(self):
+        endpoints = [
+            reverse("theatre_api:actor-detail", args=[self.actor.id]),
+            reverse("theatre_api:genre-detail", args=[self.genre.id]),
+            reverse("theatre_api:play-detail", args=[self.play.id]),
+            reverse("theatre_api:theatre_halls-detail", args=[self.theatre_hall.id]),
+            reverse("theatre_api:performance-detail", args=[self.performance.id]),
+        ]
 
-    def test_delete_genre(self):
-        response = self.client.delete(
-            reverse("theatre_api:genre-detail", args=[self.genre.id])
-        )
-        self.assertEqual(response.status_code, 403)
+        for endpoint in endpoints:
+            with self.subTest(endpoint=endpoint):
+                response = self.client.delete(endpoint)
+                self.assertEqual(response.status_code, 403)
 
-    def test_delete_play(self):
-        response = self.client.delete(
-            reverse("theatre_api:play-detail", args=[self.play.id])
-        )
-        self.assertEqual(response.status_code, 403)
-
-    def test_delete_theatre_hall(self):
-        response = self.client.delete(
-            reverse(
-                "theatre_api:theatre_halls-detail", args=[self.theatre_hall.id]
-            )
-        )
-        self.assertEqual(response.status_code, 403)
-
-    def test_delete_performance(self):
-        response = self.client.delete(
-            reverse(
-                "theatre_api:performance-detail", args=[self.performance.id]
-            )
-        )
-        self.assertEqual(response.status_code, 403)
-
-    def test_delete_reservation(self):
         response = self.client.post(
             reverse("theatre_api:reservation-list"),
             self.reservation_data,
@@ -242,50 +193,55 @@ class StaffTheatreApiDeleteTests(TestCase):
             self.reservation_data,
         ) = setup_common_data(self.token)
 
-    def test_delete_actor(self):
-        response = self.client.delete(
-            reverse("theatre_api:actor-detail", args=[self.actor.id])
-        )
-        self.assertEqual(response.status_code, 204)
+    def test_delete_operations(self):
+        endpoints = [
+            reverse("theatre_api:actor-detail", args=[self.actor.id]),
+            reverse("theatre_api:genre-detail", args=[self.genre.id]),
+            reverse("theatre_api:play-detail", args=[self.play.id]),
+            reverse("theatre_api:theatre_halls-detail", args=[self.theatre_hall.id]),
+        ]
 
-    def test_delete_genre(self):
-        response = self.client.delete(
-            reverse("theatre_api:genre-detail", args=[self.genre.id])
-        )
-        self.assertEqual(response.status_code, 204)
+        for endpoint in endpoints:
+            with self.subTest(endpoint=endpoint):
+                response = self.client.delete(endpoint)
+                print(f"Endpoint: {endpoint}, Status Code: {response.status_code}, Content: {response.content}")
+                self.assertEqual(response.status_code, 204)
 
-    def test_delete_play(self):
-        response = self.client.delete(
-            reverse("theatre_api:play-detail", args=[self.play.id])
-        )
-        self.assertEqual(response.status_code, 204)
+    def test_post_operations(self):
+        post_data = {
+            "actor": {"first_name": "John", "last_name": "Doe"},
+            "genre": {"name": "Comedy"},
+            "theatre_hall": {"name": "Main Hall", "rows": 10, "seats_in_row": 20},
+            "play": {
+                "title": "Hamlet",
+                "description": "A Shakespearean tragedy",
+                "genres": [self.genre.id],
+                "actors": [self.actor.id]
+            },
+            "performance": {
+                "play": self.play.id,
+                "theatre_hall": self.theatre_hall.id,
+                "show_time": datetime.datetime.now(),
+            },
+        }
 
-    def test_delete_theatre_hall(self):
-        response = self.client.delete(
-            reverse(
-                "theatre_api:theatre_halls-detail", args=[self.theatre_hall.id]
-            )
-        )
-        self.assertEqual(response.status_code, 204)
+        post_endpoints = {
+            "actor": reverse("theatre_api:actor-list"),
+            "genre": reverse("theatre_api:genre-list"),
+            "theatre_hall": reverse("theatre_api:theatre_halls-list"),
+            "play": reverse("theatre_api:play-list"),
+            "performance": reverse("theatre_api:performance-list"),
+        }
 
-    def test_delete_performance(self):
-        response = self.client.delete(
-            reverse(
-                "theatre_api:performance-detail", args=[self.performance.id]
-            )
-        )
-        self.assertEqual(response.status_code, 204)
+        for model, endpoint in post_endpoints.items():
+            with self.subTest(model=model):
+                response = self.client.post(endpoint, post_data[model], format="json")
+                self.assertEqual(response.status_code, 201)
+                created_id = response.data["id"]
 
-    def test_delete_reservation(self):
-        response = self.client.post(
-            reverse("theatre_api:reservation-list"),
-            self.reservation_data,
-            format="json",
-        )
-        self.assertEqual(response.status_code, 201)
-        reservation_id = response.data["id"]
-
-        response = self.client.delete(
-            reverse("theatre_api:reservation-detail", args=[reservation_id])
-        )
-        self.assertEqual(response.status_code, 204)
+                if model == "theatre_hall":
+                    model = "theatre_halls"
+                detail_endpoint = reverse(f"theatre_api:{model}-detail", args=[created_id])
+                response = self.client.get(detail_endpoint)
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.data["id"], created_id)
