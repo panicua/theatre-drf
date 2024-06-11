@@ -3,7 +3,6 @@ from telegram.ext import Application, CommandHandler, CallbackQueryHandler, Call
 import requests
 from decouple import config
 
-# TELEGRAM_TOKEN = settings.TELEGRAM_BOT_TOKEN
 TELEGRAM_TOKEN = config("TELEGRAM_TOKEN")
 WEBSITE_BASE_URL = config("WEBSITE_BASE_URL")
 
@@ -26,17 +25,23 @@ async def button(update: Update, context: CallbackContext) -> None:
         response = requests.get(f'{WEBSITE_BASE_URL}/api/theatre/genres/')
         answer_string = ""
         for result in response.json()['results']:
-            text = f"*id:* {result['id']}; *name:* {result['name']}"
+            text = f"*name:* {result['name']}"
             answer_string += f"{text}\n"
-        await query.edit_message_text(text=f"{answer_string}", parse_mode="markdown")
+        try:
+            await query.edit_message_text(text=f"{answer_string}", parse_mode="markdown")
+        except Exception as e:
+            await query.edit_message_text(text=f"{e}")
 
     elif choice == 'actors':
         response = requests.get(f'{WEBSITE_BASE_URL}/api/theatre/actors/')
         answer_string = ""
         for result in response.json()['results']:
-            text = f"*id:* {result['id']}; *full_name:* {result['full_name']}"
+            text = f"*full_name:* {result['full_name']}"
             answer_string += f"{text}\n"
-        await query.edit_message_text(text=f"{answer_string}", parse_mode="markdown")
+        try:
+            await query.edit_message_text(text=f"{answer_string}", parse_mode="markdown")
+        except Exception as e:
+            await query.edit_message_text(text=f"{e}")
 
 
 def main() -> None:

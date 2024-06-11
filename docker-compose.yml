@@ -1,5 +1,6 @@
 services:
   theatre_app:
+    container_name: theatre-app
     build:
       context: .
       dockerfile: Dockerfile
@@ -16,6 +17,22 @@ services:
       python manage.py runserver 0.0.0.0:8000"
     depends_on:
       - db
+    networks:
+      - my_network
+
+
+  telegram_bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    command: >
+      sh -c '[ -z "$TELEGRAM_TOKEN" ] || python telegram_bot/bot.py'
+    depends_on:
+      - theatre_app
+    networks:
+      - my_network
 
   db:
     image: postgres:14-alpine
@@ -26,6 +43,12 @@ services:
       - "5432:5432"
     volumes:
       - db:$PGDATA
+    networks:
+      - my_network
 
 volumes:
   db:
+
+networks:
+  my_network:
+    driver: bridge
