@@ -1,5 +1,6 @@
 from datetime import timedelta
 from pathlib import Path
+
 from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -11,7 +12,7 @@ SECRET_KEY = config("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', 'theatre-app', '127.0.0.1']
+ALLOWED_HOSTS = ["localhost", "theatre-app", "127.0.0.1"]
 
 INTERNAL_IPS = [
     "127.0.0.1",
@@ -26,11 +27,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     "rest_framework",
     "rest_framework_simplejwt",
     "drf_spectacular",
-
     "theatre_api",
     "user",
 ]
@@ -100,7 +99,11 @@ REST_FRAMEWORK = {
         "theatre_api.throttling.UserRateThrottle",
         "theatre_api.throttling.StaffRateThrottle",
     ],
-    "DEFAULT_THROTTLE_RATES": {"anon": "120/hour", "user": "3600/hour", "staff": "18000/hour"},
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "120/hour",
+        "user": "3600/hour",
+        "staff": "18000/hour",
+    },
 }
 
 SPECTACULAR_SETTINGS = {

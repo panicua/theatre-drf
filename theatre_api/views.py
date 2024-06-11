@@ -25,7 +25,8 @@ from theatre_api.models import (
 from theatre_api.paginators import LargeResultsSetPagination
 from theatre_api.permissions import (
     IsAdminOrIfAuthenticatedReadOnly,
-    IsStaffToDelete, IsStaffToCreateDestroyPatchPut,
+    IsStaffToDelete,
+    IsStaffToCreateDestroyPatchPut,
 )
 from theatre_api.serializers import (
     GenreSerializer,
