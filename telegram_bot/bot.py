@@ -1,5 +1,6 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Application, CommandHandler, CallbackQueryHandler, CallbackContext
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler, \
+    CallbackContext
 import requests
 from decouple import config
 
@@ -13,7 +14,8 @@ async def start(update: Update, context: CallbackContext) -> None:
         [InlineKeyboardButton("Actors", callback_data='actors')],
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text('Please choose:', reply_markup=reply_markup)
+    await update.message.reply_text('Please choose:',
+                                    reply_markup=reply_markup)
 
 
 async def button(update: Update, context: CallbackContext) -> None:
@@ -28,7 +30,8 @@ async def button(update: Update, context: CallbackContext) -> None:
             text = f"*name:* {result['name']}"
             answer_string += f"{text}\n"
         try:
-            await query.edit_message_text(text=f"{answer_string}", parse_mode="markdown")
+            await query.edit_message_text(text=f"{answer_string}",
+                                          parse_mode="markdown")
         except Exception as e:
             await query.edit_message_text(text=f"{e}")
 
@@ -39,9 +42,17 @@ async def button(update: Update, context: CallbackContext) -> None:
             text = f"*full_name:* {result['full_name']}"
             answer_string += f"{text}\n"
         try:
-            await query.edit_message_text(text=f"{answer_string}", parse_mode="markdown")
+            await query.edit_message_text(text=f"{answer_string}",
+                                          parse_mode="markdown")
         except Exception as e:
             await query.edit_message_text(text=f"{e}")
+
+    keyboard = [
+        [InlineKeyboardButton("Genres", callback_data='genres')],
+        [InlineKeyboardButton("Actors", callback_data='actors')],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    await query.message.edit_reply_markup(reply_markup)
 
 
 def main() -> None:
