@@ -14,7 +14,9 @@ WEBSITE_BASE_URL = config("WEBSITE_BASE_URL")
 
 async def start(update: Update, context: CallbackContext) -> None:
     reply_markup = create_reply_markup()
-    await update.message.reply_text("Please choose:", reply_markup=reply_markup)
+    await update.message.reply_text(
+        "Please choose:", reply_markup=reply_markup
+    )
 
 
 def create_reply_markup() -> InlineKeyboardMarkup:
@@ -40,7 +42,9 @@ def fetch_data(endpoint: str) -> str:
 async def handle_response(query, endpoint: str) -> None:
     try:
         answer_string = fetch_data(endpoint)
-        await query.edit_message_text(text=answer_string, parse_mode="markdown")
+        await query.edit_message_text(
+            text=answer_string, parse_mode="markdown"
+        )
     except Exception as e:
         await query.edit_message_text(text=str(e))
 
